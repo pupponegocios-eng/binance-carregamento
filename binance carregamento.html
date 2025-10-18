@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo de Implantação Binance</title>
+    <!-- Carrega Tailwind CSS para estilização fácil e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define a fonte Inter como principal */
+        :root {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Fundo de trading profissional: Preto profundo */
+        body {
+            /* Fundo principal */
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
+            position: relative;
+            overflow: hidden; 
+        }
+        
+        /* Animação de Fluxo de Dados no Fundo */
+        @keyframes dataFlow {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            opacity: 0.08; /* Opacidade sutil */
+            
+            /* Padrão de linhas diagonais douradas simulando fluxo de dados */
+            background-image: repeating-linear-gradient(
+                -45deg,
+                rgba(240, 185, 11, 0) 0%,
+                rgba(240, 185, 11, 0) 4px,
+                rgba(240, 185, 11, 0.2) 5px,
+                rgba(240, 185, 11, 0.2) 6px
+            );
+            background-size: 20px 20px;
+            animation: dataFlow 15s linear infinite; /* Fluxo contínuo lento */
+        }
+
+
+        /* Definição da cor de destaque (Gold/Binance Yellow - #F0B90B) */
+        .accent-gold {
+            color: #F0B90B; 
+        }
+        .bg-accent-gold {
+            background-color: #F0B90B;
+        }
+        .border-accent-gold {
+            border-color: #F0B90B;
+        }
+        
+        /* Animação de pulso mais lenta para o aviso crítico */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Efeito de brilho pulsante no display de contagem regressiva */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(240, 185, 11, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(240, 185, 11, 0.8), 0 0 5px rgba(240, 185, 11, 0.6); }
+        }
+
+        .countdown-card {
+            animation: pulseGlow 3s infinite ease-in-out;
+            transition: transform 0.3s ease;
+        }
+
+        .countdown-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Estilo para a barra de progresso (para suavidade visual) */
+        .progress-bar-fill {
+            transition: width 0.3s ease-out; /* Transição suave para o preenchimento */
+        }
+        
+        /* Estilo para a Barra de Status de Mercado (Fase 1) */
+        .mini-chart-status {
+            height: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(240, 185, 11, 0.5);
+        }
+        
+        /* Animação para as Barras de Crypto (simulando Candlesticks) */
+        @keyframes barsMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } 
+        }
+        
+        .crypto-bars {
+            animation: barsMove 6s linear infinite; 
+        }
+    </style>
+</head>
+<body class="accent-gold min-h-screen flex items-center justify-center p-4">
+
+    <div id="appContainer" class="w-full max-w-2xl bg-gray-950/95 backdrop-blur-sm rounded-2xl shadow-[0_0_80px_rgba(240,185,11,0.6)] p-6 sm:p-12 space-y-10 border-4 border-accent-gold">
+
+        <!-- FASE 1: Tela de Contagem Regressiva (Visível até o horário alvo) -->
+        <div id="countdownContainer" class="text-center">
+            <div class="flex items-center justify-center mb-4">
+                
+                <!-- NOVO ÍCONE: SIMBOLO BINANCE-INSPIRED -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 sm:h-12 sm:w-12 accent-gold mr-3 animate-pulse" viewBox="0 0 100 100" fill="currentColor">
+                    <!-- Fundo sutil -->
+                    <rect x="0" y="0" width="100" height="100" fill="none"/>
+                    <rect x="10" y="10" width="80" height="80" rx="10" opacity="0.1"/>
+                    <!-- Top-right (Gold) -->
+                    <rect x="50" y="10" width="40" height="40" />
+                    <!-- Bottom-left (Gold) -->
+                    <rect x="10" y="50" width="40" height="40" />
+                    <!-- Central Gap (Black/Deep Grey for high contrast) -->
+                    <path d="M50 10 L50 90 M10 50 L90 50" stroke="#000000" stroke-width="5"/>
+                </svg>
+
+                <h1 class="text-3xl sm:text-4xl font-black tracking-widest text-white">
+                    PROTOCOLO DE ATIVAÇÃO BINANCE
+                </h1>
+            </div>
+            
+            <!-- Barra de Status de Mercado Ativo -->
+            <div class="mini-chart-status w-full mb-8 flex items-center p-2">
+                <span class="text-xs font-semibold uppercase text-gray-500 mr-4 tracking-widest hidden sm:inline">DATA STREAM PENDING</span>
+                <div class="flex-grow h-full relative overflow-hidden">
+                    <div class="crypto-bars flex absolute top-0 left-0 h-full w-[200%]">
+                        <!-- Simulação de Candlesticks (barras de alta/baixa) -->
+                        <div class="flex space-x-1 h-full items-end" style="width: 50%;">
+                            <!-- Bloco de Barras 1 -->
+                            <div class="w-2 h-4/5 bg-green-500/70"></div>
+                            <div class="w-2 h-2/3 bg-red-500/70"></div>
+                            <div class="w-2 h-full bg-green-500/70"></div>
+                            <div class="w-2 h-1/2 bg-red-500/70"></div>
+                            <div class="w-2 h-3/4 bg-green-500/70"></div>
+                            <div class="w-2 h-2/5 bg-red-500/70"></div>
+                            <div class="w-2 h-4/5 bg-green-500/70"></div>
+                            <div class="w-2 h-2/3 bg-red-500/70"></div>
+                            <div class="w-2 h-full bg-green-500/70"></div>
+                            <div class="w-2 h-1/2 bg-red-500/70"></div>
+                            <div class="w-2 h-3/4 bg-green-500/70"></div>
+                            <div class="w-2 h-2/5 bg-red-500/70"></div>
+                            <div class="w-2 h-4/5 bg-green-500/70"></div>
+                            <div class="w-2 h-2/3 bg-red-500/70"></div>
+                            <div class="w-2 h-full bg-green-500/70"></div>
+                            <div class="w-2 h-1/2 bg-red-500/70"></div>
+                            <div class="w-2 h-3/4 bg-green-500/70"></div>
+                            <div class="w-2 h-2/5 bg-red-500/70"></div>
+                        </div>
+                        <div class="flex space-x-1 h-full items-end" style="width: 50%;">
+                             <!-- Bloco de Barras 2 (Duplicado para loop contínuo) -->
+                            <div class="w-2 h-4/5 bg-green-500/70"></div>
+                            <div class="w-2 h-2/3 bg-red-500/70"></div>
+                            <div class="w-2 h-full bg-green-500/70"></div>
+                            <div class="w-2 h-1/2 bg-red-500/70"></div>
+                            <div class="w-2 h-3/4 bg-green-500/70"></div>
+                            <div class="w-2 h-2/5 bg-red-500/70"></div>
+                            <div class="w-2 h-4/5 bg-green-500/70"></div>
+                            <div class="w-2 h-2/3 bg-red-500/70"></div>
+                            <div class="w-2 h-full bg-green-500/70"></div>
+                            <div class="w-2 h-1/2 bg-red-500/70"></div>
+                            <div class="w-2 h-3/4 bg-green-500/70"></div>
+                            <div class="w-2 h-2/5 bg-red-500/70"></div>
+                            <div class="w-2 h-4/5 bg-green-500/70"></div>
+                            <div class="w-2 h-2/3 bg-red-500/70"></div>
+                            <div class="w-2 h-full bg-green-500/70"></div>
+                            <div class="w-2 h-1/2 bg-red-500/70"></div>
+                            <div class="w-2 h-3/4 bg-green-500/70"></div>
+                            <div class="w-2 h-2/5 bg-red-500/70"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-gray-300 text-xl mb-8 font-extralight">
+                O protocolo de acesso avançado **Binance** será ativado **amanhã** exatamente às <span class="accent-gold font-extrabold tracking-widest">07:00:00</span> (Hora Local).
+            </p>
+            
+            <!-- Display de Contagem Regressiva em Cartões -->
+            <div id="countdownDisplay" class="flex justify-center space-x-3 sm:space-x-6 text-black">
+                
+                <!-- Horas -->
+                <div class="countdown-card bg-accent-gold p-4 sm:p-6 rounded-lg font-mono w-24 sm:w-32 transition duration-300">
+                    <div id="hoursDisplay" class="text-4xl sm:text-6xl font-extrabold">--</div>
+                    <div class="text-sm sm:text-base font-semibold mt-1">HORAS</div>
+                </div>
+
+                <!-- Minutos -->
+                <div class="countdown-card bg-accent-gold p-4 sm:p-6 rounded-lg font-mono w-24 sm:w-32 transition duration-300">
+                    <div id="minutesDisplay" class="text-4xl sm:text-6xl font-extrabold">--</div>
+                    <div class="text-sm sm:text-base font-semibold mt-1">MINUTOS</div>
+                </div>
+
+                <!-- Segundos -->
+                <div class="countdown-card bg-accent-gold p-4 sm:p-6 rounded-lg font-mono w-24 sm:w-32 transition duration-300">
+                    <div id="secondsDisplay" class="text-4xl sm:text-6xl font-extrabold">--</div>
+                    <div class="text-sm sm:text-base font-semibold mt-1">SEGUNDOS</div>
+                </div>
+            </div>
+            
+            <!-- DIRETRIZ CRÍTICA DE CONEXÃO -->
+            <div class="bg-red-900/40 border-l-4 border-red-600 p-4 rounded-lg text-left shadow-xl animate-pulse-slow mt-8">
+                <div class="flex items-start">
+                    <!-- Ícone de Alerta Aprimorado (maior) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500 mr-4 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h18.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-extrabold text-red-400 mb-1 tracking-widest uppercase">DIRETRIZ OPERACIONAL CRÍTICA</p>
+                        <p class="text-base text-white leading-relaxed font-medium">
+                            É **imperativo** manter a estabilidade e continuidade da conexão entre o dispositivo móvel e a estação de trabalho para assegurar a integridade total do fluxo de dados e evitar interrupções no protocolo de ativação da **Binance**.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="mt-4 text-sm text-gray-500">
+                (Ajustado automaticamente ao seu fuso horário local)
+            </p>
+        </div>
+
+        <!-- FASE 2: Tela de Carregamento (Inicialmente oculta, visível após 07:00) -->
+        <div id="loadingContainer" class="hidden text-center space-y-6">
+            <h2 class="text-3xl font-extrabold accent-gold tracking-widest">
+                [PROTOCOLOS DE NEGOCIAÇÃO ATIVOS]
+            </h2>
+            
+            <!-- Barra de Carregamento: Gold e Preto -->
+            <div class="w-full bg-gray-800 rounded-full h-8 overflow-hidden shadow-xl border-2 border-accent-gold">
+                <div 
+                    id="progressBar" 
+                    class="progress-bar-fill h-full bg-accent-gold flex items-center justify-center transition-all duration-300 ease-out" 
+                    style="width: 0%;"
+                >
+                    <span id="progressText" class="text-black font-extrabold text-sm tracking-widest">0%</span>
+                </div>
+            </div>
+            
+            <p id="loadingStatus" class="text-gray-400 italic text-sm mt-4">Conectando ao Websocket de Mercado...</p>
+
+            <!-- Conteúdo de Exemplo Carregado -->
+            <div id="contentPlaceholder" class="hidden bg-gray-800 p-6 rounded-lg mt-8 text-left space-y-3 border border-accent-gold/50">
+                <h3 class="text-2xl font-bold accent-gold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    ACESSO TOTAL BINANCE CONCEDIDO
+                </h3>
+                <p class="text-gray-300">
+                    <span class="font-bold accent-gold">SISTEMA ONLINE.</span> As credenciais e o ambiente de negociação foram implantados com sucesso. O software cliente para PC está pronto para ser executado com controle total sobre as funcionalidades da corretora Binance.
+                </p>
+                <div class="h-4 w-full bg-accent-gold/50 rounded-sm"></div>
+                <div class="h-4 w-4/5 bg-accent-gold/50 rounded-sm"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Elementos DOM para Contagem Regressiva
+        const countdownContainer = document.getElementById('countdownContainer');
+        const hoursDisplay = document.getElementById('hoursDisplay');
+        const minutesDisplay = document.getElementById('minutesDisplay');
+        const secondsDisplay = document.getElementById('secondsDisplay');
+
+        // Elementos DOM para Carregamento
+        const loadingContainer = document.getElementById('loadingContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const loadingStatus = document.getElementById('loadingStatus');
+        const contentPlaceholder = document.getElementById('contentPlaceholder');
+
+        let countdownInterval;
+
+        /**
+         * Calcula o timestamp alvo: Amanhã às 07:00:00 (hora local).
+         */
+        function getTargetTime() {
+            const now = new Date();
+            const target = new Date(now);
+            
+            // Avança um dia
+            target.setDate(now.getDate() + 1); 
+            // Define a hora exata: 07:00:00.000
+            target.setHours(7, 0, 0, 0); 
+            
+            console.log("Horário Alvo Agendado (Amanhã 07:00, Hora Local):", target.toLocaleString());
+
+            return target.getTime();
+        }
+
+        const targetTime = getTargetTime();
+
+        /**
+         * Calcula e exibe o tempo restante até o horário alvo.
+         */
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetTime - now;
+
+            // Se o tempo acabou (ou passou), inicie o carregamento.
+            if (distance <= 0) {
+                clearInterval(countdownInterval);
+                startLoading();
+                return;
+            }
+
+            // Cálculo de tempo (horas, minutos, segundos)
+            const hours = Math.floor(distance / (1000 * 60 * 60)); // Distância total em horas
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Formatação do display
+            hoursDisplay.textContent = String(hours).padStart(2, '0');
+            minutesDisplay.textContent = String(minutes).padStart(2, '0');
+            secondsDisplay.textContent = String(seconds).padStart(2, '0');
+        }
+
+        /**
+         * Simula a barra de carregamento de 0% a 100%.
+         */
+        function startLoading() {
+            // Esconde o contador e mostra o carregamento
+            countdownContainer.classList.add('hidden');
+            loadingContainer.classList.remove('hidden');
+
+            let progress = 0;
+            // Mensagens de status específicas para a implantação de trading
+            const statusMessages = [
+                "Inicializando Conexão Segura ao Servidor Binance...",
+                "Validando chaves de API e permissões (1/5)...",
+                "Baixando e cacheando histórico de 90 dias...",
+                "Configurando parâmetros de execução do Algoritmo (2/5)...",
+                "Estabelecendo canal de ordens de baixa latência (3/5)...",
+                "Verificando integridade do Kernel de trading (4/5)...",
+                "Teste de latência e PING de mercado concluído.",
+                "Executando simulações de stress do volume de dados...",
+                "Implantação de módulo finalizada. Preparando interface (5/5)...",
+                "SISTEMA ONLINE. ACESSO TOTAL BINANCE CONCEDIDO."
+            ];
+            let messageIndex = 0;
+            const loadingDuration = 2000; // 2 segundos para animação principal
+            const intervalTime = 50; // Intervalo de 50ms para suavidade
+
+            const totalSteps = loadingDuration / intervalTime;
+            const stepIncrement = 100 / totalSteps;
+
+            const loadingInterval = setInterval(() => {
+                progress += stepIncrement; 
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    // Atualização final da barra e texto
+                    progressBar.style.width = `100%`;
+                    progressText.textContent = `100%`;
+                    loadingStatus.textContent = statusMessages[statusMessages.length - 1]; // Última mensagem
+                    
+                    // Exibe o conteúdo final
+                    setTimeout(() => {
+                        contentPlaceholder.classList.remove('hidden');
+                        progressText.textContent = 'ACESSO LIBERADO';
+                        progressText.classList.add('text-lg'); // Deixa o texto final maior
+                    }, 500); 
+                } else {
+                    // Atualiza a barra e o texto
+                    progressBar.style.width = `${progress}%`;
+                    progressText.textContent = `${Math.round(progress)}%`;
+
+                    // Atualiza o status de carregamento em pontos específicos
+                    if (progress < 10 && messageIndex < 0) { messageIndex = 0; } // Inicial
+                    else if (progress >= 10 && progress < 25 && messageIndex < 1) { messageIndex = 1; }
+                    else if (progress >= 25 && progress < 40 && messageIndex < 3) { messageIndex = 3; }
+                    else if (progress >= 40 && progress < 60 && messageIndex < 5) { messageIndex = 5; }
+                    else if (progress >= 60 && progress < 80 && messageIndex < 7) { messageIndex = 7; }
+                    else if (progress >= 80 && messageIndex < 8) { messageIndex = 8; }
+                    
+                    loadingStatus.textContent = statusMessages[messageIndex];
+                }
+                
+            }, intervalTime);
+
+        }
+
+        // ------------------
+        // Inicialização
+        // ------------------
+        window.onload = function() {
+            // Verifica o tempo imediatamente e então a cada segundo
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        };
+    </script>
+</body>
+</html>
